@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion'
 import RotatingText from '../../Helpers/AnimatedComponents/RotatingText'
+import { Link } from 'react-router-dom';
+
+
 
 export const Hero = () => {
   return (
@@ -32,8 +35,8 @@ export const Hero = () => {
             <span className="text-white flex items-center justify-center gap-2">
 
               <RotatingText
-                texts={['FIN-KON', 'A Secure', 'Scalable', 'Place for Devs']}
-                mainClassName="inline-flex self-center lg:mt-4 px-2 sm:px-2 md:px-3 bg-themeGreen text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
+                texts={['FinConnect', 'A Secure', 'Scalable', 'Place for Devs']}
+                mainClassName="inline-flex self-center text-[#151515] lg:mt-4 px-2 sm:px-2 md:px-3 bg-themeGreen text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
                 staggerFrom="last"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
@@ -54,8 +57,7 @@ export const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.7 }}
           >
-            A cutting-edge platform connecting innovators with secure, scalable, and rapid transfer solutions. <br />
-            Built for developers, trusted by teams, and designed for the future of access.
+            A Subscription-Gated Fintech API Dashboard
           </motion.p>
 
 
@@ -63,16 +65,16 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.5 }}
-            className="mb-24"
+            className="mb-10"
           >
-            <button className="bg-transparent border-2 border-themeGreen text-white rounded-full px-10 py-3 font-medium hover:bg-themeGreen hover:text-black transition-all duration-300 transform hover:scale-105">
+            <Link to='/register' className="bg-transparent border-2 border-themeGreen text-white rounded-full px-10 py-3 font-medium hover:bg-themeGreen hover:text-black transition-all duration-300 transform hover:scale-105">
               Register Now
-            </button>
+            </Link>
           </motion.div>
 
 
           <motion.div
-            className="bg-themeGreen/90 rounded-xl py-8 px-8"
+            className="bg-themeGreen/90 rounded-xl py-4 px-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}
@@ -85,11 +87,11 @@ export const Hero = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 0.5 }}
               >
-                <h3 className="text-black text-2xl font-bold leading-tight">
+                <h3 className="text-black text-xl font-bold leading-tight">
                   Trusted By<br />
                   Industry Leaders
                 </h3>
-                <p className="text-black mt-2 text-sm md:text-base max-w-sm">
+                <p className="text-black mt-2 text-sm md:text-[14px] max-w-sm">
                   Powering innovation in fintech, enterprise, and cloud with seamless integration, robust security, and real-time performance.
                 </p>
               </motion.div>
