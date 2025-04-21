@@ -117,7 +117,7 @@ const PricingCard = ({
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
             >
-                Buy now
+               Subscribe
                 <ArrowRight className="ml-2 h-4 w-4" />
             </motion.button>
         </motion.div>
