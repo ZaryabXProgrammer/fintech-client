@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, CreditCard, FileText, ArrowUpRight, ChevronRight, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,10 +6,23 @@ import { useSelector } from 'react-redux';
 import { userRequest } from '../../lib/RequestMethods'
 
 const Overview = () => {
+    const [userBalance, setUserBalance] = useState(null)
 
-    const userBalance = useSelector((state) => state.user.currentUser ? state.user.currentUser.user.balance : null);
 
-    console.log(userBalance)
+    useEffect(() => {
+
+        const fetchUserBalance = async () => {
+
+            const res = await userRequest.get("/balance");
+
+            setUserBalance(res.data.balance)
+        }
+
+        fetchUserBalance();
+    }, [])
+
+
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -113,13 +126,6 @@ const Overview = () => {
                     variants={itemVariants}
                 />
 
-                <QuickAccessCard
-                    title="View Balance"
-                    description="Track your current balance and spending"
-                    icon={<CreditCard size={20} />}
-                    linkTo="/dashboard/balance"
-                    variants={itemVariants}
-                />
 
                 <QuickAccessCard
                     title="Invoice Generator"

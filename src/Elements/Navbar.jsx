@@ -5,15 +5,29 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, User2Icon } from 'lucide-react'; // Import ChevronDown icon
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut } from '../Redux/userSlice';
+import { userRequest } from '../lib/RequestMethods';
 
 export const Navbar = () => {
 
-    const user = useSelector((state) => state.user.currentUser ? state.user.currentUser.user.name : null);
+    const user = useSelector((state) => state.user.currentUser ? state.user.currentUser.user : null);
+
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [dashboardOpen, setDashboardOpen] = useState(false);
+    const [subscriptionStatus, setSubscriptionStatus] = useState(false)
 
+
+    useEffect(() => {
+
+        const checkSubscriptionStatus = async () => {
+            const res = await userRequest.get("/subscriptions/status")
+            setSubscriptionStatus(res.data.subscribed)
+            console.log("Subscription Staus is:", res.data.subscribed)
+        }
+
+        checkSubscriptionStatus();
+    }, [])
 
     useEffect(() => {
         const checkScreenSize = () => {
@@ -25,6 +39,12 @@ export const Navbar = () => {
 
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
+
+    const handleSignOut = () => {
+
+        dispatch(signOut());
+        window.location.reload();
+    }
 
     // Define dashboard subitems
     const dashboardItems = [
@@ -39,8 +59,8 @@ export const Navbar = () => {
 
     const items = [
         { label: "Home", href: "/" },
-        { label: "About", href: "#contact" },
-        { label: "Dashboard", href: "/dashboard/overview", hasSubmenu: true },
+
+        ...(subscriptionStatus ? [{ label: "Dashboard", href: "/dashboard/overview", hasSubmenu: true }] : []),
         { label: "Pricing", href: "/pricing" },
     ];
 
@@ -277,10 +297,10 @@ export const Navbar = () => {
                 {user ? (
                     <div className="flex items-center gap-4">
                         <span className="border border-themeGreen font-[500] flex items-center gap-[6px] text-white rounded-full px-5 py-2 hover:bg-themeGreen hover:text-white transition-colors">
-                            <User2Icon className="text-white w-5" /> {user}
+                            <User2Icon className="text-white w-5" /> {user.name}
                         </span>
                         <button
-                            onClick={() => dispatch(signOut())}
+                            onClick={handleSignOut}
                             className="border border-red-500 font-[500] text-white rounded-full px-5 py-2 hover:bg-red-500 hover:text-white transition-colors"
                         >
                             Logout

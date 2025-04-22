@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { userRequest } from '../../lib/RequestMethods';
 
 const Invoice = () => {
   const [formData, setFormData] = useState({
@@ -7,8 +8,11 @@ const Invoice = () => {
     endDate: '',
   });
 
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
+
+
 
 
   const containerVariants = {
@@ -40,16 +44,30 @@ const Invoice = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
 
+    try {
+      const res = await userRequest.get("/invoice", {
+        params: {
+          start: formData.startDate,
+          end: formData.endDate,
+        },
+      });
 
-    setTimeout(() => {
-      setIsGenerating(false);
+      console.log("Invoice response:", res.data); // handle invoice data if needed
       setIsGenerated(true);
-    }, 2000);
+    } catch (err) {
+      console.error("Error generating invoice:", err);
+      // optionally show an error message here
+    } finally {
+      setTimeout(() => {
+        setIsGenerating(false);
+      }, 2000);
+    }
   };
+
 
   return (
     <motion.div

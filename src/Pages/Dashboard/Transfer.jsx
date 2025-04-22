@@ -195,28 +195,7 @@ const Transfer = () => {
         )}
       </motion.div>
 
-      <motion.div
-        className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800"
-        variants={itemVariants}
-      >
-        <h3 className="text-xl font-semibold mb-4 text-themeGreen">Recent Transfers</h3>
-        <div className="space-y-4">
-          <div className="p-4 border-b border-gray-800 flex justify-between items-center">
-            <div>
-              <p className="font-medium">To Savings Account</p>
-              <p className="text-sm text-gray-400">April 15, 2025</p>
-            </div>
-            <p className="text-yellow-400 font-medium">$500.00</p>
-          </div>
-          <div className="p-4 border-b border-gray-800 flex justify-between items-center">
-            <div>
-              <p className="font-medium">From Investment Account</p>
-              <p className="text-sm text-gray-400">April 10, 2025</p>
-            </div>
-            <p className="text-green-400 font-medium">$1,200.00</p>
-          </div>
-        </div>
-      </motion.div>
+    
     </motion.div>
   );
 };

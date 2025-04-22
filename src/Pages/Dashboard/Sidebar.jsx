@@ -15,8 +15,12 @@ import {
     Menu,
     X
 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
+
+    const user = useSelector((state) => state.user.currentUser?.user || null);
+ 
     const [isExpanded, setIsExpanded] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,18 +52,21 @@ const Sidebar = () => {
 
     const menuItems = [
         { name: 'Overview', icon: <Home size={20} />, path: '/dashboard/overview' },
-        // { name: 'Balance', icon: <CreditCard size={20} />, path: '/dashboard/balance' },
         { name: 'Transfer', icon: <ArrowRightLeft size={20} />, path: '/dashboard/transfer' },
         { name: 'Transactions', icon: <BarChart2 size={20} />, path: '/dashboard/transactions' },
         { name: 'Invoice', icon: <FileText size={20} />, path: '/dashboard/invoice' },
-        {
-            name: 'Admin',
-            icon: <Settings size={20} />,
-            submenu: [
-                { name: 'Users', icon: <Users size={18} />, path: '/dashboard/admin/users' },
-                { name: 'Logs', icon: <Activity size={18} />, path: '/dashboard/admin/logs' }
+        ...(user?.role === 'admin'
+            ? [
+                {
+                    name: 'Admin',
+                    icon: <Settings size={20} />,
+                    submenu: [
+                        { name: 'Users', icon: <Users size={18} />, path: '/dashboard/admin/users' },
+                        { name: 'Logs', icon: <Activity size={18} />, path: '/dashboard/admin/logs' }
+                    ]
+                }
             ]
-        }
+            : [])
     ];
 
     // Check if a path is active

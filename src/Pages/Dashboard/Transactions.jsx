@@ -4,42 +4,27 @@ import { userRequest } from '../../lib/RequestMethods'
 
 const Transactions = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const transactionsPerPage = 5;
-  const totalPages = 5;
-
-
-  const allTransactions = [
-    { id: 1, type: 'sent', amount: 200, from: 'Account A', to: 'Account B', date: '2025-04-21', status: 'completed' },
-    { id: 2, type: 'received', amount: 1500, from: 'Employer', to: 'Main Account', date: '2025-04-19', status: 'completed' },
-    { id: 3, type: 'sent', amount: 75.50, from: 'Main Account', to: 'Electricity Bill', date: '2025-04-18', status: 'completed' },
-    { id: 4, type: 'sent', amount: 35.99, from: 'Main Account', to: 'Netflix Subscription', date: '2025-04-16', status: 'completed' },
-    { id: 5, type: 'sent', amount: 120, from: 'Main Account', to: 'Internet Bill', date: '2025-04-15', status: 'completed' },
-    { id: 6, type: 'received', amount: 400, from: 'Client Payment', to: 'Main Account', date: '2025-04-12', status: 'completed' },
-    { id: 7, type: 'sent', amount: 65.75, from: 'Main Account', to: 'Water Bill', date: '2025-04-10', status: 'completed' },
-    { id: 8, type: 'sent', amount: 25, from: 'Main Account', to: 'Savings Account', date: '2025-04-08', status: 'completed' },
-    { id: 9, type: 'received', amount: 1500, from: 'Employer', to: 'Main Account', date: '2025-04-05', status: 'completed' },
-    { id: 10, type: 'sent', amount: 99.99, from: 'Main Account', to: 'Amazon', date: '2025-04-03', status: 'completed' },
-  ];
-
+  const [transactions, setTransactions] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [timeframe, setTimeframe] = useState('30');
 
   useEffect(() => {
-
     const fetchTransactions = async () => {
-
-      const response = await userRequest.get("/transactions");
-      console.log(response.data)
-
-    }
+      try {
+        setLoading(true);
+        const response = await userRequest.get("/transactions");
+        setTransactions(response.data.transactions || []);
+        setTotalPages(response.data.pagination?.totalPages || 1);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        setLoading(false);
+      }
+    };
     fetchTransactions();
-  }, [])
-
-
-
-  const getCurrentTransactions = () => {
-    const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-    return allTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
-  };
+  }, [currentPage, filter, timeframe]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -53,6 +38,16 @@ const Transactions = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -75,6 +70,19 @@ const Transactions = () => {
       }
     }
   };
+
+  // Calculate summary data
+  const summaryData = transactions.reduce((acc, transaction) => {
+    const amount = transaction.amount;
+
+    if (transaction.direction === 'incoming') {
+      acc.totalReceived += amount;
+    } else {
+      acc.totalSent += amount;
+    }
+
+    return acc;
+  }, { totalSent: 0, totalReceived: 0 });
 
   return (
     <motion.div
@@ -99,13 +107,17 @@ const Transactions = () => {
           <div className="flex space-x-2 text-[10px] lg:text-[14px]">
             <select
               className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-themeGreen"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
             >
               <option value="all">All Transactions</option>
-              <option value="sent">Sent</option>
-              <option value="received">Received</option>
+              <option value="outgoing">Sent</option>
+              <option value="incoming">Received</option>
             </select>
             <select
               className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-themeGreen"
+              value={timeframe}
+              onChange={(e) => setTimeframe(e.target.value)}
             >
               <option value="30">Last 30 days</option>
               <option value="90">Last 90 days</option>
@@ -119,37 +131,53 @@ const Transactions = () => {
             <thead>
               <tr className="border-b border-gray-800">
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Date</th>
+                <th className="py-3 px-4 text-left text-gray-400 font-medium">Reference</th>
+                <th className="py-3 px-4 text-left text-gray-400 font-medium">Type</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Description</th>
+                <th className="py-3 px-4 text-left text-gray-400 font-medium">Counterparty</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Amount</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Status</th>
               </tr>
             </thead>
             <tbody>
-              {getCurrentTransactions().map((transaction, index) => (
-                <motion.tr
-                  key={transaction.id}
-                  className="border-b border-gray-800 hover:bg-gray-800 transition-colors duration-150"
-                  variants={itemVariants}
-                  custom={index}
-                  whileHover={{ x: 5 }}
-                >
-                  <td className="py-4 px-4">{transaction.date}</td>
-                  <td className="py-4 px-4">
-                    {transaction.type === 'sent'
-                      ? `Sent from ${transaction.from} to ${transaction.to}`
-                      : `Received from ${transaction.from} to ${transaction.to}`
-                    }
-                  </td>
-                  <td className={`py-4 px-4 font-medium ${transaction.type === 'sent' ? 'text-red-400' : 'text-green-400'}`}>
-                    {transaction.type === 'sent' ? '-' : '+'} ${transaction.amount.toFixed(2)}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-900 text-green-300">
-                      {transaction.status}
-                    </span>
-                  </td>
-                </motion.tr>
-              ))}
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="py-4 px-4 text-center">Loading transactions...</td>
+                </tr>
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="py-4 px-4 text-center">No transactions found</td>
+                </tr>
+              ) : (
+                transactions.map((transaction, index) => (
+                  <motion.tr
+                    key={transaction.id}
+                    className="border-b border-gray-800 hover:bg-gray-800 transition-colors duration-150"
+                    variants={itemVariants}
+                    custom={index}
+                    whileHover={{ x: 5 }}
+                  >
+                    <td className="py-4 px-4">{formatDate(transaction.timestamp)}</td>
+                    <td className="py-4 px-4 font-mono text-sm">{transaction.reference}</td>
+                    <td className="py-4 px-4 capitalize">{transaction.type}</td>
+                    <td className="py-4 px-4">{transaction.description}</td>
+                    <td className="py-4 px-4">{transaction.counterparty?.name || 'N/A'}</td>
+                    <td className={`py-4 px-4 font-medium ${transaction.direction === 'outgoing' ? 'text-red-400' : 'text-green-400'}`}>
+                      {transaction.direction === 'outgoing' ? '-' : '+'} ${transaction.amount.toFixed(2)} {transaction.currency}
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${transaction.status === 'completed'
+                        ? 'bg-green-900 text-green-300'
+                        : transaction.status === 'pending'
+                          ? 'bg-yellow-900 text-yellow-300'
+                          : 'bg-red-900 text-red-300'
+                        }`}>
+                        {transaction.status}
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -189,17 +217,19 @@ const Transactions = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-800 p-5 rounded-lg">
             <p className="text-gray-400 mb-1">Total Sent</p>
-            <p className="text-2xl font-semibold text-red-400">-$621.24</p>
+            <p className="text-2xl font-semibold text-red-400">-${summaryData.totalSent.toFixed(2)}</p>
           </div>
 
           <div className="bg-gray-800 p-5 rounded-lg">
             <p className="text-gray-400 mb-1">Total Received</p>
-            <p className="text-2xl font-semibold text-green-400">+$3,400.00</p>
+            <p className="text-2xl font-semibold text-green-400">+${summaryData.totalReceived.toFixed(2)}</p>
           </div>
 
           <div className="bg-gray-800 p-5 rounded-lg">
             <p className="text-gray-400 mb-1">Net Flow</p>
-            <p className="text-2xl font-semibold text-themeGreen">+$2,778.76</p>
+            <p className="text-2xl font-semibold text-themeGreen">
+              ${(summaryData.totalReceived - summaryData.totalSent).toFixed(2)}
+            </p>
           </div>
         </div>
       </motion.div>

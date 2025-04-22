@@ -40,14 +40,14 @@ export default function LoginForm() {
 
       dispatch(loginSuccess(response.data));
       toast.success('Logged in successfully!', {
-        duration: 4000,
+        duration: 2000,
 
       });
 
       // Navigate after toast duration (4s)
       setTimeout(() => {
-        navigate('/');
-      }, 4000);
+        window.location.href = '/';
+      }, 2000);
 
     } catch (error) {
       toast.error('Invalid email or password. Please try again.');
