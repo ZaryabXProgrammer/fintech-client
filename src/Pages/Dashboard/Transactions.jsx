@@ -16,6 +16,7 @@ const Transactions = () => {
         setLoading(true);
         const response = await userRequest.get("/transactions");
         setTransactions(response.data.transactions || []);
+        console.log(response.data)
         setTotalPages(response.data.pagination?.totalPages || 1);
         setLoading(false);
       } catch (error) {
@@ -74,15 +75,9 @@ const Transactions = () => {
   // Calculate summary data
   const summaryData = transactions.reduce((acc, transaction) => {
     const amount = transaction.amount;
-
-    if (transaction.direction === 'incoming') {
-      acc.totalReceived += amount;
-    } else {
-      acc.totalSent += amount;
-    }
-
+    acc.totalTransacted += amount;
     return acc;
-  }, { totalSent: 0, totalReceived: 0 });
+  }, { totalTransacted: 0 });
 
   return (
     <motion.div
@@ -111,8 +106,7 @@ const Transactions = () => {
               onChange={(e) => setFilter(e.target.value)}
             >
               <option value="all">All Transactions</option>
-              <option value="outgoing">Sent</option>
-              <option value="incoming">Received</option>
+              <option value="transfer">Transfers</option>
             </select>
             <select
               className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-themeGreen"
@@ -134,7 +128,6 @@ const Transactions = () => {
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Reference</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Type</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Description</th>
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">Counterparty</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Amount</th>
                 <th className="py-3 px-4 text-left text-gray-400 font-medium">Status</th>
               </tr>
@@ -142,11 +135,11 @@ const Transactions = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="py-4 px-4 text-center">Loading transactions...</td>
+                  <td colSpan="6" className="py-4 px-4 text-center">Loading transactions...</td>
                 </tr>
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="py-4 px-4 text-center">No transactions found</td>
+                  <td colSpan="6" className="py-4 px-4 text-center">No transactions found</td>
                 </tr>
               ) : (
                 transactions.map((transaction, index) => (
@@ -161,16 +154,15 @@ const Transactions = () => {
                     <td className="py-4 px-4 font-mono text-sm">{transaction.reference}</td>
                     <td className="py-4 px-4 capitalize">{transaction.type}</td>
                     <td className="py-4 px-4">{transaction.description}</td>
-                    <td className="py-4 px-4">{transaction.counterparty?.name || 'N/A'}</td>
-                    <td className={`py-4 px-4 font-medium ${transaction.direction === 'outgoing' ? 'text-red-400' : 'text-green-400'}`}>
-                      {transaction.direction === 'outgoing' ? '-' : '+'} ${transaction.amount.toFixed(2)} {transaction.currency}
+                    <td className="py-4 px-4 font-medium text-themeGreen">
+                      ${transaction.amount.toFixed(2)} {transaction.currency}
                     </td>
                     <td className="py-4 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${transaction.status === 'completed'
-                        ? 'bg-green-900 text-green-300'
-                        : transaction.status === 'pending'
-                          ? 'bg-yellow-900 text-yellow-300'
-                          : 'bg-red-900 text-red-300'
+                          ? 'bg-green-900 text-green-300'
+                          : transaction.status === 'pending'
+                            ? 'bg-yellow-900 text-yellow-300'
+                            : 'bg-red-900 text-red-300'
                         }`}>
                         {transaction.status}
                       </span>
@@ -214,22 +206,10 @@ const Transactions = () => {
         variants={itemVariants}
       >
         <h3 className="text-xl font-semibold mb-4 text-themeGreen">Transaction Summary</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           <div className="bg-gray-800 p-5 rounded-lg">
-            <p className="text-gray-400 mb-1">Total Sent</p>
-            <p className="text-2xl font-semibold text-red-400">-${summaryData.totalSent.toFixed(2)}</p>
-          </div>
-
-          <div className="bg-gray-800 p-5 rounded-lg">
-            <p className="text-gray-400 mb-1">Total Received</p>
-            <p className="text-2xl font-semibold text-green-400">+${summaryData.totalReceived.toFixed(2)}</p>
-          </div>
-
-          <div className="bg-gray-800 p-5 rounded-lg">
-            <p className="text-gray-400 mb-1">Net Flow</p>
-            <p className="text-2xl font-semibold text-themeGreen">
-              ${(summaryData.totalReceived - summaryData.totalSent).toFixed(2)}
-            </p>
+            <p className="text-gray-400 mb-1">Total Transacted</p>
+            <p className="text-2xl font-semibold text-themeGreen">${summaryData.totalTransacted.toFixed(2)}</p>
           </div>
         </div>
       </motion.div>

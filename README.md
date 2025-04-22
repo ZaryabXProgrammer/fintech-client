@@ -1,12 +1,105 @@
-# React + Vite
+# 🚀 FinConnect – Subscription-Gated Fintech API Dashboard (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A clean, modern, and fully functional frontend for **FinConnect**, built as part of the **WebKode Challenge Pack**. This dashboard enables developers to register, subscribe to plans, and interact with a suite of secure fintech APIs — all gated behind a Stripe-based subscription flow.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔧 Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend**: Vite + React
+- **Animations**: Framer Motion
+- **Routing**: React Router
+- **Styling**: TailwindCSS
+- **Icons**: Lucide-react
+- **State Management**: Redux Toolkit
+- **Auth & Subscription**: JWT + Stripe Checkout (Test Mode)
+- **API Integration**: Axios for communication with backend APIs
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ✅ Features
+
+### 🔐 Authentication & Subscription Flow
+
+- User registration (`/register`)
+- Login with JWT (`/login`)
+- Redirect to `/pricing` post-login
+- Subscribe to a plan via **Stripe Checkout** (Test mode)
+- Authenticated users only can access `/dashboard/*` routes
+- Unsubscribed users are blocked/redirected (HTTP 403)
+
+### 📊 Dashboard Modules (Post-Subscription)
+
+- **Overview** – Personalized user dashboard landing
+- **Balance** – Displays mock financial balance
+- **Transfer** – Initiate mock fund transfers between accounts
+- **Transactions** – Paginated transaction history
+- **Invoice** – Generate transaction summary between selected dates
+- **Admin Panel**
+  - View all users & subscription statuses
+  - View request logs
+
+### ⚙️ Developer & Admin Tools
+
+- JWT + Role-based access (RBAC)
+- Rate limiting (10 req/min/user)
+- Server + client-side form validations
+- Reusable components & modular structure
+
+---
+
+## 💳 Stripe Integration
+
+- Implemented using **Stripe Checkout** (test mode)
+- Webhooks handled server-side to activate/cancel subscriptions
+- Realistic flow and UX mirroring production payment systems
+
+---
+
+## 🧪 Test Accounts
+
+✅ Credentials are pre-seeded via backend seeders or migrations:
+
+- `user1@example.com` / `password123`
+- `user2@example.com` / `password123`
+
+These accounts can be used to:
+
+- Log in and test the subscription flow
+- Transfer mock funds between them
+- View real-time updates in transactions and balance
+
+---
+
+## 🗂 Project Structure
+
+```bash
+📁 src
+├── 📁 components
+├── 📁 pages
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   ├── Pricing.jsx
+│   ├── Dashboard/
+│   │   ├── Overview.jsx
+│   │   ├── Balance.jsx
+│   │   ├── Transfer.jsx
+│   │   ├── Transactions.jsx
+│   │   └── Invoice.jsx
+├── 📁 Redux
+├── 📁 Helpers
+├── App.jsx
+└── main.jsx
+```
+
+# Clone the repo
+git clone https://github.com/your-username/finconnect-frontend.git
+cd finconnect-frontend
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+
+

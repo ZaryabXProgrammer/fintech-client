@@ -21,7 +21,7 @@ const App = () => {
     const checkSubscriptionStatus = async () => {
       const res = await userRequest.get("/subscriptions/status")
       setSubscriptionStatus(res.data.subscribed)
-      console.log("Subscription Staus is:", res.data.subscribed)
+    
     }
 
     checkSubscriptionStatus();

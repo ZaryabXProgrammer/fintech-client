@@ -164,6 +164,8 @@ const PricingComponent = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const user = useSelector((state) => state.user.currentUser?.user || null);
 
+
+
   useEffect(() => {
     // Check if user is already subscribed
     const checkSubscriptionStatus = async () => {
@@ -247,7 +249,7 @@ const PricingComponent = () => {
   const pricingData = [
     {
       tier: "Basic",
-      price: "19",
+      price: "19.99",
       popular: false,
       emoji: "🦊",
       color: "themeGreen",
@@ -260,7 +262,7 @@ const PricingComponent = () => {
     },
     {
       tier: "Standard",
-      price: "24",
+      price: "19.99",
       popular: true,
       emoji: "🐼",
       color: "themeGreen",
@@ -273,7 +275,7 @@ const PricingComponent = () => {
     },
     {
       tier: "Professional",
-      price: "32",
+      price: "19.99",
       popular: false,
       emoji: "🦄",
       color: "themeGreen",
@@ -300,6 +302,16 @@ const PricingComponent = () => {
           Select the perfect plan for your needs. All plans include full access
           to our features with different levels of support.
         </p>
+
+        {isSubscribed && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 mt-4 py-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-md hover:shadow-lg transition duration-200"
+          >
+            Plan: Premium
+          </motion.button>
+        )}
 
         {isSubscribed && (
           <div className="mt-6">

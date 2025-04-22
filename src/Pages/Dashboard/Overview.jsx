@@ -102,9 +102,11 @@ const Overview = () => {
                                 </div>
                             </div>
 
-                            <div className="hidden md:block h-32 w-32 rounded-full bg-themeGreen/20 backdrop-blur-md border border-themeGreen/20 flex items-center justify-center mt-4 md:mt-0">
+                            <div className="w-32 h-32 rounded-full bg-themeGreen/20 backdrop-blur-md border border-themeGreen/20 flex items-center justify-center mt-4 md:mt-0 mx-auto">
                                 <TrendingUp size={48} className="text-themeGreen" />
                             </div>
+
+
                         </div>
                     </div>
                 </motion.div>
