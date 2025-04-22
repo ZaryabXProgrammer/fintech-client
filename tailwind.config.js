@@ -6,6 +6,9 @@ export default {
       colors: {
         themeGreen: "#08c068",
       },
+      fontFamily: {
+        orbitron: ["Orbitron", "sans-serif"],
+      },
     },
   },
   plugins: [],

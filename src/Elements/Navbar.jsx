@@ -2,12 +2,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import GooeyNav from '../Helpers/AnimatedComponents/GooeyNav';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react'; // Import ChevronDown icon
+import { ChevronDown, User2Icon } from 'lucide-react'; // Import ChevronDown icon
+import { useDispatch, useSelector } from 'react-redux';
+import { signOut } from '../Redux/userSlice';
 
 export const Navbar = () => {
+
+    const user = useSelector((state) => state.user.currentUser ? state.user.currentUser.user.name : null);
+    const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [dashboardOpen, setDashboardOpen] = useState(false);
+
 
     useEffect(() => {
         const checkScreenSize = () => {
@@ -92,7 +98,7 @@ export const Navbar = () => {
 
     return (
         <motion.nav
-            className="flex items-center relative justify-between py-6 px-6 md:px-12"
+            className="flex items-center relative justify-between py-5 px-6 md:px-12 "
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -102,10 +108,18 @@ export const Navbar = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
             >
-                <div className="flex items-center">
-                    <span className="text-white text-2xl font-bold">FIN</span>
-                    <span className="text-themeGreen text-2xl font-bold">CONNECT</span>
-                </div>
+                <Link to='/' className="flex items-center gap-[1px] font-orbitron">
+                    <img
+                        src="https://img.icons8.com/?size=100&id=tTy9wkoqgqew&format=png&color=0ab061"
+                        className="w-[33px] object-cover rotate-[9deg]"
+                        alt="FinConnect Logo"
+                    />
+
+
+
+                    <i><span className="text-white text-xl font-bold ">FIN<span className="text-themeGreen  font-bold">CONNECT</span></span></i>
+
+                </Link>
             </motion.div>
 
             {/* Desktop Navigation */}
@@ -260,12 +274,35 @@ export const Navbar = () => {
                 transition={{ delay: 0.4 }}
                 className='hidden md:flex flex-row items-center gap-2'
             >
-                <Link to='/login' className="border border-themeGreen font-[500] text-white rounded-full px-5 py-2 hover:bg-themeGreen hover:text-white transition-colors">
-                    Login
-                </Link>
-                <Link to='/register' className="border border-themeGreen font-[500] text-white rounded-full px-5 py-2 hover:bg-themeGreen hover:text-white transition-colors">
-                    Register
-                </Link>
+                {user ? (
+                    <div className="flex items-center gap-4">
+                        <span className="border border-themeGreen font-[500] flex items-center gap-[6px] text-white rounded-full px-5 py-2 hover:bg-themeGreen hover:text-white transition-colors">
+                            <User2Icon className="text-white w-5" /> {user}
+                        </span>
+                        <button
+                            onClick={() => dispatch(signOut())}
+                            className="border border-red-500 font-[500] text-white rounded-full px-5 py-2 hover:bg-red-500 hover:text-white transition-colors"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-4">
+                        <Link
+                            to="/login"
+                            className="border border-themeGreen font-[500] text-white rounded-full px-5 py-2 hover:bg-themeGreen hover:text-white transition-colors"
+                        >
+                            Login
+                        </Link>
+                        <Link
+                            to="/register"
+                            className="border border-themeGreen font-[500] text-white rounded-full px-5 py-2 hover:bg-themeGreen hover:text-white transition-colors"
+                        >
+                            Register
+                        </Link>
+                    </div>
+                )}
+
             </motion.div>
         </motion.nav>
     );

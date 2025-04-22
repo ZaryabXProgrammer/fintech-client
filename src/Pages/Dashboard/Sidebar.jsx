@@ -48,7 +48,7 @@ const Sidebar = () => {
 
     const menuItems = [
         { name: 'Overview', icon: <Home size={20} />, path: '/dashboard/overview' },
-        { name: 'Balance', icon: <CreditCard size={20} />, path: '/dashboard/balance' },
+        // { name: 'Balance', icon: <CreditCard size={20} />, path: '/dashboard/balance' },
         { name: 'Transfer', icon: <ArrowRightLeft size={20} />, path: '/dashboard/transfer' },
         { name: 'Transactions', icon: <BarChart2 size={20} />, path: '/dashboard/transactions' },
         { name: 'Invoice', icon: <FileText size={20} />, path: '/dashboard/invoice' },
@@ -215,7 +215,7 @@ const Sidebar = () => {
             {/* Logo and Toggle */}
             <div className="p-4 flex items-center justify-between border-b border-white/10">
                 {isExpanded && (
-                    <div className="text-themeGreen font-bold text-xl">FinConnect</div>
+                    <div className="text-themeGreen font-bold text-xl"></div>
                 )}
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -230,20 +230,7 @@ const Sidebar = () => {
                 {renderMenuItems()}
             </nav>
 
-            {/* User Profile */}
-            <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-sm">
-                <div className="flex items-center">
-                    <div className="w-9 h-9 rounded-full bg-themeGreen/20 border border-themeGreen/30 flex items-center justify-center text-themeGreen font-medium shadow-lg shadow-themeGreen/10">
-                        U
-                    </div>
-                    {isExpanded && (
-                        <div className="ml-3">
-                            <p className="text-sm font-medium text-white">User Name</p>
-                            <p className="text-xs text-gray-400">user@example.com</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+           
         </motion.div>
     );
 };

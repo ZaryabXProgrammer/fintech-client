@@ -1,28 +1,109 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { userRequest } from '../../lib/RequestMethods';
 
 const AdminLogs = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    count: 0,
+    page: 1,
+    pageSize: 20,
+    totalPages: 1
+  });
+
+  useEffect(() => {
+    const getLogs = async () => {
+      try {
+        setLoading(true);
+        const res = await userRequest.get("/admin/logs");
+        console.log(res.data);
+
+        if (res.data && res.data.logs) {
+          setLogs(res.data.logs);
+          setPagination({
+            count: res.data.count || 0,
+            page: res.data.page || 1,
+            pageSize: res.data.pageSize || 20,
+            totalPages: res.data.totalPages || 1
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getLogs();
+  }, []);
 
 
-  const logs = [
-    { id: 1, user: 'john.smith@example.com', action: 'login', status: 'success', ipAddress: '192.168.1.1', timestamp: '2025-04-22 09:45:23', details: 'User logged in successfully' },
-    { id: 2, user: 'sarah.j@example.com', action: 'transfer', status: 'success', ipAddress: '192.168.0.5', timestamp: '2025-04-22 10:12:08', details: 'Transferred $500 to Savings' },
-    { id: 3, user: 'michael.b@example.com', action: 'login', status: 'failed', ipAddress: '192.168.0.11', timestamp: '2025-04-22 08:30:15', details: 'Invalid password attempt' },
-    { id: 4, user: 'emily.d@example.com', action: 'invoice', status: 'success', ipAddress: '192.168.1.8', timestamp: '2025-04-21 16:22:45', details: 'Generated invoice #INV-2025-0421' },
-    { id: 5, user: 'robert.w@example.com', action: 'signup', status: 'success', ipAddress: '192.168.2.3', timestamp: '2025-04-21 14:05:12', details: 'New user registration' },
-    { id: 6, user: 'jennifer.t@example.com', action: 'password_reset', status: 'success', ipAddress: '192.168.1.22', timestamp: '2025-04-21 11:18:32', details: 'Password reset completed' },
-    { id: 7, user: 'david.m@example.com', action: 'login', status: 'failed', ipAddress: '192.168.0.19', timestamp: '2025-04-20 21:45:09', details: 'Account locked after multiple attempts' },
-    { id: 8, user: 'lisa.a@example.com', action: 'transfer', status: 'failed', ipAddress: '192.168.3.7', timestamp: '2025-04-20 18:30:55', details: 'Insufficient funds for transfer' },
-    { id: 9, user: 'john.smith@example.com', action: 'profile_update', status: 'success', ipAddress: '192.168.1.1', timestamp: '2025-04-20 15:12:40', details: 'Updated contact information' },
-    { id: 10, user: 'sarah.j@example.com', action: 'invoice', status: 'success', ipAddress: '192.168.0.5', timestamp: '2025-04-20 10:08:22', details: 'Downloaded invoice #INV-2025-0401' },
-  ];
+  const transformedLogs = logs.map((log, index) => ({
+    id: index,
+    user: log.userId || 'Unknown User',
+    action: getActionFromUrl(log.method, log.url),
+    status: 'success', // Assuming all logs are successful operations
+    timestamp: formatTimestamp(log.timestamp),
+    details: `${log.method} ${log.url} (${log.userAgent})`,
+  }));
 
+
+  function getActionFromUrl(method, url) {
+    if (url.includes('/auth')) return 'login';
+    if (url.includes('/transfer')) return 'transfer';
+    if (url.includes('/invoice')) return 'invoice';
+    if (url.includes('/create-mock-user')) return 'signup';
+    if (url.includes('/balance')) return 'balance';
+    if (url.includes('/transactions')) return 'transaction';
+    if (url.includes('/users')) return 'user_access';
+    return method.toLowerCase();
+  }
+
+  // Helper function to format timestamp
+  function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  }
 
   const filteredLogs = selectedFilter === 'all'
-    ? logs
-    : logs.filter(log => log.status === selectedFilter);
+    ? transformedLogs
+    : transformedLogs.filter(log => log.status === selectedFilter);
 
+  
+  const exportToCSV = () => {
+    // Create CSV header row
+    const headers = ['Time', 'User ID', 'Action', 'Status', 'Details'];
+
+ 
+    const csvData = filteredLogs.map(log => [
+      log.timestamp,
+      log.user,
+      log.action,
+      log.status,
+      log.details
+    ]);
+
+
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+
+   
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+   
+    link.setAttribute('href', url);
+    link.setAttribute('download', `system_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -46,7 +127,6 @@ const AdminLogs = () => {
     }
   };
 
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'success': return 'bg-green-900 text-green-300';
@@ -63,7 +143,9 @@ const AdminLogs = () => {
       case 'invoice': return 'bg-indigo-900 text-indigo-300';
       case 'signup': return 'bg-themeGreen bg-opacity-20 text-themeGreen';
       case 'password_reset': return 'bg-orange-900 text-orange-300';
-      case 'profile_update': return 'bg-cyan-900 text-cyan-300';
+      case 'balance': return 'bg-cyan-900 text-cyan-300';
+      case 'transaction': return 'bg-pink-900 text-pink-300';
+      case 'user_access': return 'bg-amber-900 text-amber-300';
       default: return 'bg-gray-700 text-gray-300';
     }
   };
@@ -102,14 +184,61 @@ const AdminLogs = () => {
             className="bg-themeGreen text-white px-4 py-2 rounded-lg"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={exportToCSV}
           >
             Export Logs
           </motion.button>
         </div>
       </motion.div>
 
+      {/* Stats Cards - Moved to the top */}
       <motion.div
-        className="bg-gray-900 rounded-xl shadow-lg border border-gray-800 mb-8"
+        className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+        variants={containerVariants}
+      >
+        <motion.div
+          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
+          variants={itemVariants}
+        >
+          <h3 className="text-lg font-semibold mb-1">Total Events</h3>
+          <p className="text-3xl font-bold text-themeGreen">{pagination.count}</p>
+          <p className="text-sm text-gray-400 mt-1">Total logged events</p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
+          variants={itemVariants}
+        >
+          <h3 className="text-lg font-semibold mb-1">Success Rate</h3>
+          <p className="text-3xl font-bold text-green-400">100%</p>
+          <p className="text-sm text-gray-400 mt-1">All requests successful</p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
+          variants={itemVariants}
+        >
+          <h3 className="text-lg font-semibold mb-1">GET Requests</h3>
+          <p className="text-3xl font-bold text-blue-400">
+            {logs.filter(log => log.method === 'GET').length}
+          </p>
+          <p className="text-sm text-gray-400 mt-1">Total GET requests</p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
+          variants={itemVariants}
+        >
+          <h3 className="text-lg font-semibold mb-1">POST Requests</h3>
+          <p className="text-3xl font-bold text-purple-400">
+            {logs.filter(log => log.method === 'POST').length}
+          </p>
+          <p className="text-sm text-gray-400 mt-1">Total POST requests</p>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        className="bg-gray-900 rounded-xl shadow-lg border border-gray-800"
         variants={itemVariants}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
@@ -123,94 +252,67 @@ const AdminLogs = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-gray-900">
-            <thead>
-              <tr className="bg-gray-800">
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">Time</th>
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">User</th>
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">Action</th>
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">Status</th>
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">IP Address</th>
-                <th className="py-3 px-4 text-left text-gray-400 font-medium">Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredLogs.map((log, index) => (
-                <motion.tr
-                  key={log.id}
-                  className="border-b border-gray-800 hover:bg-gray-800 transition-colors duration-150"
-                  variants={itemVariants}
-                  custom={index}
-                >
-                  <td className="py-3 px-4">
-                    <div className="text-sm">
-                      <div>{log.timestamp.split(' ')[0]}</div>
-                      <div className="text-gray-500">{log.timestamp.split(' ')[1]}</div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">{log.user}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getActionColor(log.action)}`}>
-                      {log.action.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(log.status)}`}>
-                      {log.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="text-gray-400">{log.ipAddress}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    {log.details}
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+          {loading ? (
+            <div className="flex justify-center items-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-themeGreen"></div>
+            </div>
+          ) : (
+            <table className="min-w-full bg-gray-900">
+              <thead>
+                <tr className="bg-gray-800">
+                  <th className="py-3 px-4 text-left text-gray-400 font-medium">Time</th>
+                  <th className="py-3 px-4 text-left text-gray-400 font-medium">User ID</th>
+                  <th className="py-3 px-4 text-left text-gray-400 font-medium">Action</th>
+                  <th className="py-3 px-4 text-left text-gray-400 font-medium">Status</th>
+                  <th className="py-3 px-4 text-left text-gray-400 font-medium">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredLogs.length > 0 ? (
+                  filteredLogs.map((log, index) => (
+                    <motion.tr
+                      key={log.id}
+                      className="border-b border-gray-800 hover:bg-gray-800 transition-colors duration-150"
+                      variants={itemVariants}
+                      custom={index}
+                    >
+                      <td className="py-3 px-4">
+                        <div className="text-sm">
+                          <div>{log.timestamp.split(' ')[0]}</div>
+                          <div className="text-gray-500">{log.timestamp.split(' ')[1]}</div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded">
+                          {log.user}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getActionColor(log.action)}`}>
+                          {log.action.replace('_', ' ')}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(log.status)}`}>
+                          {log.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {log.details}
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr className="border-b border-gray-800">
+                    <td colSpan="5" className="py-8 text-center text-gray-500">
+                      No logs found with the selected filter.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
-      </motion.div>
-
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-4 gap-6"
-        variants={containerVariants}
-      >
-        <motion.div
-          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
-          variants={itemVariants}
-        >
-          <h3 className="text-lg font-semibold mb-1">Total Events</h3>
-          <p className="text-3xl font-bold text-themeGreen">843</p>
-          <p className="text-sm text-gray-400 mt-1">Last 30 days</p>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
-          variants={itemVariants}
-        >
-          <h3 className="text-lg font-semibold mb-1">Success Rate</h3>
-          <p className="text-3xl font-bold text-green-400">94.2%</p>
-          <p className="text-sm text-gray-400 mt-1">+2.1% from last month</p>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
-          variants={itemVariants}
-        >
-          <h3 className="text-lg font-semibold mb-1">Failed Logins</h3>
-          <p className="text-3xl font-bold text-red-400">12</p>
-          <p className="text-sm text-gray-400 mt-1">Past 7 days</p>
-        </motion.div>
-
-        <motion.div
-          className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800"
-          variants={itemVariants}
-        >
-          <h3 className="text-lg font-semibold mb-1">Active Sessions</h3>
-          <p className="text-3xl font-bold text-blue-400">28</p>
-          <p className="text-sm text-gray-400 mt-1">Current users online</p>
-        </motion.div>
       </motion.div>
     </motion.div>
   );

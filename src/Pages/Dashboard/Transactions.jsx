@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { userRequest } from '../../lib/RequestMethods'
 
 const Transactions = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +20,19 @@ const Transactions = () => {
     { id: 9, type: 'received', amount: 1500, from: 'Employer', to: 'Main Account', date: '2025-04-05', status: 'completed' },
     { id: 10, type: 'sent', amount: 99.99, from: 'Main Account', to: 'Amazon', date: '2025-04-03', status: 'completed' },
   ];
+
+
+  useEffect(() => {
+
+    const fetchTransactions = async () => {
+
+      const response = await userRequest.get("/transactions");
+      console.log(response.data)
+
+    }
+    fetchTransactions();
+  }, [])
+
 
 
   const getCurrentTransactions = () => {

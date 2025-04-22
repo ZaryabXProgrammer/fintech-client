@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { userRequest } from '../../lib/RequestMethods';
+import { useSelector } from 'react-redux'
 
 const Transfer = () => {
+
+
+  const currentUserId = useSelector((state) => state.user.currentUser ? state.user.currentUser.user.id : null);
+  console.log(currentUserId)
+
   const [formData, setFormData] = useState({
-    fromAccount: '',
+    fromAccount: currentUserId,
     toAccount: '',
     amount: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
- 
-  const accounts = [
-    { id: 'acc1', name: 'Main Account', balance: '$8,500.00' },
-    { id: 'acc2', name: 'Savings Account', balance: '$12,350.00' },
-    { id: 'acc3', name: 'Investment Account', balance: '$5,125.00' },
-  ];
-
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -48,26 +47,42 @@ const Transfer = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const { fromAccount, toAccount, amount } = formData;
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
+    try {
+      const response = await userRequest.post("/transfer", {
+        sourceId: fromAccount,
+        destinationId: toAccount,
+        amount: parseFloat(amount),
+      });
 
-   
+      console.log('Transfer Successful:', response.data);
+      
+
       setTimeout(() => {
-        setIsSuccess(false);
-        setFormData({
-          fromAccount: '',
-          toAccount: '',
-          amount: '',
-        });
-      }, 3000);
-    }, 1500);
+        setIsSubmitting(false);
+        setIsSuccess(true);
+
+        setTimeout(() => {
+          setIsSuccess(false);
+          setFormData({
+            fromAccount: '',
+            toAccount: '',
+            amount: '',
+          });
+        }, 3000);
+      }, 1500);
+    } catch (error) {
+      console.error('Transfer failed:', error);
+
+      setIsSubmitting(false);
+    }
   };
+
 
   return (
     <motion.div
@@ -108,42 +123,33 @@ const Transfer = () => {
                 <label className="block text-gray-400 mb-2" htmlFor="fromAccount">
                   From Account
                 </label>
-                <select
+                  <input
+                    disabled
+                  type="text"
                   name="fromAccount"
                   id="fromAccount"
+                  placeholder="Enter account number"
                   value={formData.fromAccount}
                   onChange={handleChange}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-themeGreen"
                   required
-                >
-                  <option value="">Select Account</option>
-                  {accounts.map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} ({account.balance})
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div>
                 <label className="block text-gray-400 mb-2" htmlFor="toAccount">
                   To Account
                 </label>
-                <select
+                <input
+                  type="text"
                   name="toAccount"
                   id="toAccount"
+                  placeholder="Enter account number"
                   value={formData.toAccount}
                   onChange={handleChange}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-themeGreen"
                   required
-                >
-                  <option value="">Select Account</option>
-                  {accounts.map(account => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} ({account.balance})
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 

@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, CreditCard, FileText, ArrowUpRight, ChevronRight, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { userRequest } from '../../lib/RequestMethods'
 
 const Overview = () => {
+
+    const userBalance = useSelector((state) => state.user.currentUser ? state.user.currentUser.user.balance : null);
+
+    console.log(userBalance)
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -26,14 +32,6 @@ const Overview = () => {
         }
     };
 
-
-    const accountBalance = "$24,589.50";
-    const recentActivity = [
-        { id: 1, title: "Netflix Subscription", amount: "-$15.99", date: "Today" },
-        { id: 2, title: "Salary Deposit", amount: "+$3,500.00", date: "Yesterday" },
-        { id: 3, title: "Amazon Purchase", amount: "-$49.99", date: "Jan 15" },
-    ];
-
     return (
         <motion.div
             className="w-full"
@@ -45,7 +43,7 @@ const Overview = () => {
                 className="flex flex-col md:flex-row items-start gap-5"
                 variants={containerVariants}
             >
-   
+
                 <motion.div
                     className="w-full md:w-2/3 rounded-2xl overflow-hidden"
                     variants={itemVariants}
@@ -53,9 +51,29 @@ const Overview = () => {
                     <div className="h-full bg-gradient-to-br from-themeGreen/20 to-gray-800/40 backdrop-blur-md border border-white/10 p-6 md:p-8 rounded-2xl shadow-xl">
                         <div className="flex flex-col md:flex-row justify-between">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                                    Welcome to FinConnect
-                                </h1>
+                                <aside className="flex items-center mb-2">
+                                    <span className="text-2xl md:text-3xl font-bold text-white">
+                                        Welcome to&nbsp;
+                                    </span>
+
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="flex items-center gap-[1px]"
+                                    >
+                                        <img
+                                            src="https://img.icons8.com/?size=100&id=tTy9wkoqgqew&format=png&color=0ab061"
+                                            className="w-[30px] object-cover rotate-[9deg]"
+                                            alt="FinConnect Logo"
+                                        />
+
+                                        <i>  <span className="text-xl md:text-2xl font-bold text-white font-orbitron leading-none">
+                                            FIN<span className="text-themeGreen">CONNECT</span>
+                                        </span></i>
+                                    </motion.div>
+                                </aside>
+
                                 <p className="text-gray-300 mb-6 max-w-md">
                                     Your financial dashboard shows your current balance and recent activity.
                                 </p>
@@ -65,7 +83,7 @@ const Overview = () => {
                                         <Wallet className="text-themeGreen mr-3" size={24} />
                                         <div>
                                             <p className="text-gray-400 text-sm">Current Balance</p>
-                                            <p className="text-2xl font-bold text-white">{accountBalance}</p>
+                                            <p className="text-2xl font-bold text-white">${userBalance}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -78,35 +96,11 @@ const Overview = () => {
                     </div>
                 </motion.div>
 
-              
-                <motion.div
-                    className="w-full md:w-1/3 bg-gray-800/20 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl"
-                    variants={itemVariants}
-                >
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
-                        <button className="text-themeGreen text-sm flex items-center">
-                            View All <ChevronRight size={16} />
-                        </button>
-                    </div>
 
-                    <div className="space-y-3">
-                        {recentActivity.map(item => (
-                            <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 cursor-pointer">
-                                <div>
-                                    <p className="text-white font-medium">{item.title}</p>
-                                    <p className="text-gray-400 text-xs">{item.date}</p>
-                                </div>
-                                <span className={`font-medium ${item.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                                    {item.amount}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
+
             </motion.div>
 
-         
+
             <motion.div
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-5"
                 variants={containerVariants}

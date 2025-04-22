@@ -4,7 +4,11 @@ import { Eye, EyeOff, Mail, User, ChevronLeft } from 'lucide-react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import toast, { Toaster } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { publicRequest } from '../lib/RequestMethods';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess } from '../Redux/userSlice';
+
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -16,6 +20,9 @@ const validationSchema = Yup.object({
 });
 
 export default function LoginForm() {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,13 +34,21 @@ export default function LoginForm() {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setIsLoading(true);
+      dispatch(loginStart());
+      const response = await publicRequest.post("/auth/login", values);
 
-   
-      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      console.log('Login data submitted:', values);
-      toast.success('Logged in successfully!');
-   
+      dispatch(loginSuccess(response.data));
+      toast.success('Logged in successfully!', {
+        duration: 4000,
+
+      });
+
+      // Navigate after toast duration (4s)
+      setTimeout(() => {
+        navigate('/');
+      }, 4000);
+
     } catch (error) {
       toast.error('Invalid email or password. Please try again.');
       console.error('Login error:', error);
@@ -78,12 +93,12 @@ export default function LoginForm() {
               <div className="h-10 w-10 rounded-full bg-themeGreen flex items-center justify-center mr-2">
                 <User className="text-white h-5 w-5" />
               </div>
-      
+
             </div>
 
             <div className="ml-auto space-x-4">
               <Link to="/" className="text-gray-400 hover:text-themeGreen transition">Home</Link>
-            
+
             </div>
           </motion.div>
 
@@ -142,7 +157,7 @@ export default function LoginForm() {
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="mb-6 flex justify-between items-center">
+                {/* <motion.div variants={itemVariants} className="mb-6 flex justify-between items-center">
                   <div className="flex items-center">
                     <input
                       type="checkbox"
@@ -156,10 +171,10 @@ export default function LoginForm() {
                   <Link to="/forgot-password" className="text-sm text-themeGreen hover:underline">
                     Forgot password?
                   </Link>
-                </motion.div>
+                </motion.div> */}
 
                 <div className="flex items-center justify-between mt-8">
-                 
+
 
                   <motion.button
                     variants={itemVariants}

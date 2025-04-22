@@ -10,9 +10,14 @@ import LoginForm from './Pages/Login';
 import PricingComponent from './Pages/Pricing';
 import DashboardHome from './Pages/Dashboard/DashboardHome';
 import NotFound from './Pages/NotFound';
+import { useSelector } from 'react-redux';
 
-{/* <div className='bg-[#1f1f1f] text-[#fbfbfb]'> */}
+{/* <div className='bg-[#1f1f1f] text-[#fbfbfb]'> */ }
 const App = () => {
+
+  const user = useSelector((state) => state.user.currentUser ? state.user.currentUser.user : null);
+  console.log(user)
+
   return (
     <div className='bg-[#1f1f1f] text-[#fbfbfb]'>
 

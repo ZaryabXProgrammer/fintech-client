@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion'
 import RotatingText from '../../Helpers/AnimatedComponents/RotatingText'
 import { Link } from 'react-router-dom';
-
+import { useSelector } from 'react-redux'
 
 
 export const Hero = () => {
+  const username = useSelector((state) => state.user.currentUser ? state.user.currentUser.user.name : null);
+
   return (
     <div className="relative">
       {/* Green overlay effect */}
@@ -67,9 +69,13 @@ export const Hero = () => {
             transition={{ delay: 0.6, duration: 0.5 }}
             className="mb-10"
           >
-            <Link to='/register' className="bg-transparent border-2 border-themeGreen text-white rounded-full px-10 py-3 font-medium hover:bg-themeGreen hover:text-black transition-all duration-300 transform hover:scale-105">
-              Register Now
-            </Link>
+
+            {!username && (
+              <Link to='/register' className="bg-transparent border-2 border-themeGreen text-white rounded-full px-10 py-3 font-medium hover:bg-themeGreen hover:text-black transition-all duration-300 transform hover:scale-105">
+                Register Now
+              </Link>
+            )}
+
           </motion.div>
 
 
@@ -97,7 +103,7 @@ export const Hero = () => {
               </motion.div>
 
               <motion.div
-                className="flex flex-wrap justify-center gap-10 md:gap-16"
+                className="flex flex-wrap justify-center gap-10  font-orbitron"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 0.5 }}

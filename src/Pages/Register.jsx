@@ -4,7 +4,8 @@ import { Eye, EyeOff, Mail, User, ChevronLeft } from 'lucide-react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import toast, { Toaster } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { publicRequest } from '../lib/RequestMethods';
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -19,6 +20,7 @@ const validationSchema = Yup.object({
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const initialValues = {
         firstName: '',
@@ -27,16 +29,36 @@ export default function Register() {
         password: '',
     };
 
+
+
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
             setIsLoading(true);
 
-            // Simulate API call with timeout
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const { firstName, lastName, email, password } = values;
 
-            console.log('Form data submitted:', values);
+            // Combine first and last names
+            const name = `${firstName} ${lastName}`;
+
+            // Send data to the backend
+            const response = await publicRequest.post("/auth/register", {
+                name,
+                email,
+                password,
+            });
+
+
+            navigate('/login')
+
+            console.log('Form data submitted:', response.data);
+            // console.log('Form data submitted:', values);
             toast.success('Account created successfully!');
             resetForm();
+
+            setTimeout(() => {
+                navigate('/login');
+            }, 4000);
+
         } catch (error) {
             toast.error('An error occurred while creating your account.');
             console.error('Error:', error);
@@ -86,7 +108,7 @@ export default function Register() {
 
                         <div className="ml-auto space-x-4">
                             <Link to="/" className="text-gray-400 hover:text-themeGreen transition">Home</Link>
-                        
+
                         </div>
                     </motion.div>
 
@@ -180,7 +202,7 @@ export default function Register() {
                                 </motion.div>
 
                                 <div className="flex items-center justify-between mt-8">
-                                
+
 
                                     <motion.button
                                         variants={itemVariants}
