@@ -8,8 +8,10 @@ import Register from './Pages/Register';
 import Pricing from './Pages/Pricing';
 import LoginForm from './Pages/Login';
 import PricingComponent from './Pages/Pricing';
+import DashboardHome from './Pages/Dashboard/DashboardHome';
+import NotFound from './Pages/NotFound';
 
-
+{/* <div className='bg-[#1f1f1f] text-[#fbfbfb]'> */}
 const App = () => {
   return (
     <div className='bg-[#1f1f1f] text-[#fbfbfb]'>
@@ -22,6 +24,8 @@ const App = () => {
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<LoginForm />} />
           <Route path='/pricing' element={<PricingComponent />} />
+          <Route path='/dashboard/*' element={<DashboardHome />} />
+          <Route path="*" element={<NotFound />} />
 
         </Routes>
 

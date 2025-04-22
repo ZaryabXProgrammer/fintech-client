@@ -1,0 +1,108 @@
+/* Glassmorphism Utilities */
+.glass {
+    @apply bg-gray-900/50 backdrop-blur-md border border-white/10 shadow-xl;
+}
+
+.glass-card {
+    @apply bg-gray-800/30 backdrop-blur-md border border-white/10 rounded-2xl shadow-lg transition-all duration-300;
+}
+
+.glass-hover {
+    @apply hover:bg-white/10 hover:shadow-lg hover:shadow-themeGreen/5;
+}
+
+.glass-input {
+    @apply bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-xl focus:border-themeGreen/50 focus:ring-1 focus:ring-themeGreen/30;
+}
+
+.glass-button {
+    @apply bg-themeGreen/20 backdrop-blur-md text-themeGreen hover:bg-themeGreen/30 border border-themeGreen/30 rounded-xl transition-all duration-300;
+}
+
+.glass-accent {
+    @apply bg-themeGreen/10 border border-themeGreen/20 text-themeGreen;
+}
+
+
+.scrollbar-thin {
+    scrollbar-width: thin;
+}
+
+.scrollbar-thumb-themeGreen\/20 {
+    scrollbar-color: rgba(var(--theme-green-rgb), 0.2) transparent;
+}
+
+.scrollbar-track-transparent {
+    scrollbar-track-color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(var(--theme-green-rgb), 0.1);
+}
+
+
+@media (max-width: 768px) {
+    .mobile-menu-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+    }
+
+    .mobile-menu-item {
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+
+    .mobile-card {
+        @apply bg-gray-800/40 backdrop-blur-md border border-white/10 rounded-xl p-4 mb-3;
+    }
+}
+
+
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .backdrop-blur-md {
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+
+    .backdrop-blur-sm {
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+    }
+}
+
+
+.hover-float {
+    transition: transform 0.3s ease;
+}
+
+.hover-float:hover {
+    transform: translateY(-5px);
+}
+
+.hover-glow {
+    transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+    box-shadow: 0 0 15px rgba(var(--theme-green-rgb), 0.3);
+}

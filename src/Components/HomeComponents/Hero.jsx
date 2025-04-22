@@ -87,12 +87,12 @@ export const Hero = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 0.5 }}
               >
-                <h3 className="text-black text-xl font-bold leading-tight">
+                <h3 className="text-black text-lg font-bold leading-tight">
                   Trusted By<br />
                   Industry Leaders
                 </h3>
-                <p className="text-black mt-2 text-sm md:text-[14px] max-w-sm">
-                  Powering innovation in fintech, enterprise, and cloud with seamless integration, robust security, and real-time performance.
+                <p className="text-black mt-2 text-sm md:text-[13px] max-w-sm ">
+                  Powering innovation in fintech, enterprise, and cloud <br /> with seamless integration, robust security, and real-time performance.
                 </p>
               </motion.div>
 
