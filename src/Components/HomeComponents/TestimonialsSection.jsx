@@ -90,7 +90,7 @@ const TestimonialsSection = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <i>    <div className="text-6xl font-bold font-orbitron text-black">FINCONNECT</div></i>
+                        <i>    <div className="lg:text-5xl text-3xl font-bold font-orbitron text-black">FINCONNECT</div></i>
                     </motion.div>
 
                     <motion.div
@@ -100,7 +100,7 @@ const TestimonialsSection = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                        <h2 className="text-3xl font-bold text-black mb-8">TAKE CONTROL OF YOUR<br />FINANCIAL FUTURE WITH FINCONNECT</h2>
+                        <h2 className="lg:text-3xl text-xl font-bold text-black mb-8">TAKE CONTROL OF YOUR<br />FINANCIAL FUTURE WITH FINCONNECT</h2>
                         <Link to='/register' className="bg-black text-white rounded-full px-8 py-3 font-medium hover:bg-black/80 transition-all duration-300 transform hover:scale-105">
                             Get Started
                         </Link>
