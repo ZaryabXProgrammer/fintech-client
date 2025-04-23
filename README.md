@@ -93,8 +93,8 @@ These accounts can be used to:
 ```
 
 # Clone the repo
-git clone https://github.com/your-username/finconnect-frontend.git
-cd finconnect-frontend
+git clone https://github.com/ZaryabXProgrammer/fintech-server
+cd fintech-client
 
 # Install dependencies
 npm install
